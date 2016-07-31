@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="indicatorColor" format="color" />
+    <attr name="text" format="string" />
+    <attr name="textSize" format="dimension" />
+    <attr name="textColor" format="color"/>
+    <attr name="textGravity" format="enum">
+        <enum name="top" value="48" />
+        <enum name="left" value="3" />
+        <enum name="right" value="5" />
+        <enum name="bottom" value="80" />
+    </attr>
+    <attr name="visibleCount" format="integer" />
+
+    <declare-styleable name="TabLayout">
+        <attr name="indicatorColor" />
+        <attr name="textSize" />
+        <attr name="textGravity" />
+        <attr name="visibleCount" />
+    </declare-styleable>
+
+    <declare-styleable name="TabItemView">
+        <attr name="icon" />
+        <attr name="indicatorColor" />
+        <attr name="text" />
+        <attr name="textSize" />
+        <attr name="textColor" />
+        <attr name="textGravity" />
+    </declare-styleable>
+</resources>
