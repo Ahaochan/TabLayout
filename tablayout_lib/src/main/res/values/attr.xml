@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="indicatorColor" format="color" />
+    <attr name="scrollPivotX" format="float" />
     <attr name="text" format="string" />
     <attr name="textSize" format="dimension" />
     <attr name="textColor" format="color"/>
@@ -14,12 +15,13 @@
 
     <declare-styleable name="TabLayout">
         <attr name="indicatorColor" />
+        <attr name="scrollPivotX" />
         <attr name="textSize" />
         <attr name="textGravity" />
         <attr name="visibleCount" />
     </declare-styleable>
 
-    <declare-styleable name="TabItemView">
+    <declare-styleable name="CommonItemView">
         <attr name="icon" />
         <attr name="indicatorColor" />
         <attr name="text" />

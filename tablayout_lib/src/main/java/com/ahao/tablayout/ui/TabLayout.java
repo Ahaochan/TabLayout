@@ -1,12 +1,10 @@
-package com.ahao.tablayout;
+package com.ahao.tablayout.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -15,6 +13,10 @@ import android.view.WindowManager;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
+import com.ahao.tablayout.R;
+import com.ahao.tablayout.entity.TabEntity;
+import com.ahao.tablayout.listener.OnTabClickListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,24 +24,31 @@ import java.util.List;
 /**
  * Created by Avalon on 2016/7/29.
  */
-public class TabLayout extends HorizontalScrollView {
+public class TabLayout extends HorizontalScrollView{
     private static final String TAG = TabLayout.class.getSimpleName();
     private static final int DEFAULT_VISIBLE_ITEM_COUNT = 4;
 
     private Context mContext;
 
+    /** 内嵌一个LinearLayout的Tab容器*/
     private LinearLayout mTabsContainer;
-    private ViewPager mViewPager;
     private List<TabEntity> mTabEntities;
+    /** 开放接口,取消对Viewpager等的依赖*/
+    private OnTabClickListener listener;
+    /** 默认显示4个Item,多出的Item用于滑动显示*/
     private int mVisibleCount = DEFAULT_VISIBLE_ITEM_COUNT;
     private int mTabCount;
 
+    /** 默认居中滚动*/
+    private float mScrollPivotX = 0.5f;
 
+    /** 指示器的颜色*/
     private int mIndicatorColor = Color.BLUE;
 
     private int mTitleSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics());
     private int mTitleColor = Color.BLACK;
     private int mTitleGravity = Gravity.BOTTOM;
+
 
 
     public TabLayout(Context context) {
@@ -55,6 +64,18 @@ public class TabLayout extends HorizontalScrollView {
         initView(context, attrs);
     }
 
+    /** 初始化View*/
+    private void initView(Context context, AttributeSet attrs) {
+        mContext = context;
+        obtainStyledAttributes(mContext, attrs);
+
+        mTabsContainer = new LinearLayout(this.mContext);
+        addView(mTabsContainer);
+        setHorizontalScrollBarEnabled(false);
+
+        mTabEntities = new ArrayList<TabEntity>();
+    }
+
     /** 从XML中初始化*/
     private void obtainStyledAttributes(Context context, AttributeSet attrs) {
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.TabLayout);
@@ -63,6 +84,8 @@ public class TabLayout extends HorizontalScrollView {
             int attr = ta.getIndex(i);
             if(attr == R.styleable.TabLayout_indicatorColor) {
                 mIndicatorColor = ta.getColor(attr, Color.BLUE);
+            } else if (attr == R.styleable.TabLayout_scrollPivotX){
+                mScrollPivotX = ta.getFloat(attr, 0.5f);
             } else if (attr == R.styleable.TabLayout_textSize) {
                 mTitleSize = (int) ta.getDimension(attr,
                         TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12,getResources().getDisplayMetrics()));
@@ -78,19 +101,8 @@ public class TabLayout extends HorizontalScrollView {
         ta.recycle();
     }
 
-    /** 初始化View*/
-    private void initView(Context context, AttributeSet attrs) {
-        mContext = context;
-        obtainStyledAttributes(mContext, attrs);
-
-        mTabsContainer = new LinearLayout(this.mContext);
-        addView(mTabsContainer);
-
-        mTabEntities = new ArrayList<TabEntity>();
-    }
-
     /** 将TabItemView加入LinearLayout */
-    private void addTab(final int position, final TabItemView tabView) {
+    private void addTab(final int position, final CommonItemView tabView) {
         tabView.setIndicatorColor(mIndicatorColor);
 
         tabView.setIconBitmap(mTabEntities.get(position).getIconResId());
@@ -106,10 +118,13 @@ public class TabLayout extends HorizontalScrollView {
 
         tabView.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
+                int position = (Integer) view.getTag();
                 resetOtherTabs();
-                tabView.setIndicatorAlpha(1.0f);
-                mViewPager.setCurrentItem(position);
+                ((CommonItemView)view).setIndicatorAlpha(1.0f);
+                if(listener != null) {
+                    listener.OnTabClick(view, position);
+                }
             }
         });
 
@@ -123,36 +138,38 @@ public class TabLayout extends HorizontalScrollView {
     /** 重置所有TabItemView*/
     private void resetOtherTabs() {
         for(int i = 0; i < mTabsContainer.getChildCount(); i++){
-            TabItemView child = (TabItemView) mTabsContainer.getChildAt(i);
+            CommonItemView child = (CommonItemView) mTabsContainer.getChildAt(i);
             child.setIndicatorAlpha(0.0f);
         }
     }
 
-    /** 设置ViewPager*/
-    public void setViewPager(ViewPager viewPager) {
-        setViewPager(viewPager, 0);
+    /** 滚动Tab的方法*/
+    public void scrollToTab(int position, float positionOffset){
+        int count = mTabsContainer.getChildCount();
+        if(count==0 || position<0 || position>=count){
+            return;
+        }
+
+        if(positionOffset>0) {
+            CommonItemView left = (CommonItemView) mTabsContainer.getChildAt(position);
+            CommonItemView right = (CommonItemView) mTabsContainer.getChildAt(position + 1);
+
+            left.setIndicatorAlpha(1 - positionOffset);//变色
+            right.setIndicatorAlpha(positionOffset);//变色
+
+            int leftCenter = left.getLeft()+left.getWidth()/2;
+            int rightCenter = right.getLeft()+right.getWidth()/2;
+
+            float scrollTo = leftCenter-getWidth()*mScrollPivotX;//left距离滚动中心位置
+            float nextScrollTo = rightCenter-getWidth()*mScrollPivotX;//right距离滚动中心位置
+            scrollTo((int) (scrollTo+(nextScrollTo-scrollTo)*positionOffset), 0);
+        }
+
+
     }
 
-    /** 设置ViewPager*/
-    public void setViewPager(ViewPager viewPager, int position) {
-        if(viewPager == null){
-            throw new IllegalStateException("viewPager can not be NULL or EMPTY !");
-        }
-        mViewPager = viewPager;
-        mViewPager.setCurrentItem(position);
-        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.i(TAG, "onPageScrolled:"+position+","+positionOffset+","+positionOffsetPixels);
-                if(positionOffset>0) {
-                    final int i = position;
-                    TabItemView leftView = (TabItemView) mTabsContainer.getChildAt(i);
-                    TabItemView rightView = (TabItemView) mTabsContainer.getChildAt(i + 1);
-                    leftView.setIndicatorAlpha(1 - positionOffset);
-                    rightView.setIndicatorAlpha(positionOffset);
-                }
-            }
-        });
+    public void setOnTabClickListener(OnTabClickListener listener){
+        this.listener = listener;
     }
 
     /** 添加数据 */
@@ -169,9 +186,9 @@ public class TabLayout extends HorizontalScrollView {
         mTabsContainer.removeAllViews();
         this.mTabCount = mTabEntities.size();
 
-        TabItemView tabView;
+        CommonItemView tabView;
         for (int i = 0; i < mTabCount; i++) {
-            tabView = new TabItemView(mContext, mTabEntities.get(i));
+            tabView = new CommonItemView(mContext, mTabEntities.get(i));
             tabView.setTag(i);
             addTab(i, tabView);
         }

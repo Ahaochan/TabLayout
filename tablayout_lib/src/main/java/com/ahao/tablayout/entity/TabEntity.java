@@ -1,4 +1,4 @@
-package com.ahao.tablayout;
+package com.ahao.tablayout.entity;
 
 import android.support.annotation.IdRes;
 

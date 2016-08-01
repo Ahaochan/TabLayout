@@ -10,13 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
-    <com.ahao.tablayout.TabLayout
+    <com.ahao.tablayout.ui.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:textSize="12sp"
         app:textGravity="bottom"
-        app:visibleCount="4"
+        app:visibleCount="3"
         app:indicatorColor="@color/colorAccent"/>
 
 </LinearLayout>

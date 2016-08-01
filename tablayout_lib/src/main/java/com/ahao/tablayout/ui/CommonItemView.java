@@ -1,4 +1,4 @@
-package com.ahao.tablayout;
+package com.ahao.tablayout.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -21,11 +21,14 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 
+import com.ahao.tablayout.R;
+import com.ahao.tablayout.entity.TabEntity;
+
 /**
  * Created by Avalon on 2016/7/30.
  */
-public class TabItemView extends View {
-    private static final String TAG = TabItemView.class.getSimpleName();
+public class CommonItemView extends View {
+    private static final String TAG = CommonItemView.class.getSimpleName();
     private static final String INSTANCE_STATE = "instance_state";
     private static final String STATE_ALPHA = "state_alpha";
     private Context mContext;
@@ -51,22 +54,22 @@ public class TabItemView extends View {
 
     private TabEntity entity;
 
-    public TabItemView(Context context, TabEntity entity) {
+    public CommonItemView(Context context, TabEntity entity) {
         super(context);
         this.entity = entity;
         this.mContext = context;
         initView(mContext, null);
     }
 
-    public TabItemView(Context context) {
+    public CommonItemView(Context context) {
         this(context, null, 0);
     }
 
-    public TabItemView(Context context, AttributeSet attrs) {
+    public CommonItemView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public TabItemView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CommonItemView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
         Log.i(TAG, "onCreate");
@@ -75,23 +78,23 @@ public class TabItemView extends View {
 
     /** 获取xml属性 */
     private void obtainStyledAttributes(Context context, AttributeSet attrs) {
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.TabItemView);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.CommonItemView);
         for(int i = 0; i < ta.getIndexCount(); i++){
             int attr = ta.getIndex(i);
-            if (attr == R.styleable.TabItemView_icon) {
+            if (attr == R.styleable.CommonItemView_icon) {
                 BitmapDrawable bd = (BitmapDrawable) ta.getDrawable(attr);
                 if (bd != null) {
                     mIconBitmap = bd.getBitmap();
                 }
-            } else if(attr == R.styleable.TabItemView_indicatorColor){
+            } else if(attr == R.styleable.CommonItemView_indicatorColor){
                 mIndicatorColor = ta.getColor(attr, Color.BLUE);
-            } else if(attr == R.styleable.TabItemView_text) {
+            } else if(attr == R.styleable.CommonItemView_text) {
                 mTitle = ta.getString(attr);
-            } else if(attr == R.styleable.TabItemView_textSize){
+            } else if(attr == R.styleable.CommonItemView_textSize){
                 mTitleSize = (int) ta.getDimension(attr, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
-            } else if(attr == R.styleable.TabItemView_textColor) {
+            } else if(attr == R.styleable.CommonItemView_textColor) {
                 mTitleColor = ta.getColor(attr, Color.BLACK);
-            } else if(attr == R.styleable.TabItemView_textGravity){
+            } else if(attr == R.styleable.CommonItemView_textGravity){
                 mTitleGravity = ta.getInt(attr, Gravity.BOTTOM);
             }
         }
