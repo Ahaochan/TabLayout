@@ -16,7 +16,6 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.support.annotation.IdRes;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -72,7 +71,7 @@ public class CommonItemView extends View {
     public CommonItemView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
-        Log.i(TAG, "onCreate");
+//        Log.i(TAG, "onCreate");
         initView(mContext, attrs);
     }
 
@@ -216,7 +215,7 @@ public class CommonItemView extends View {
 
     /** 绘制图标*/
     private void drawIcon(Canvas canvas, int alpha) {
-        Log.i(TAG,"drawIcon_Alpha:"+alpha+","+mIconXfermode.toString());
+//        Log.i(TAG,"drawIcon_Alpha:"+alpha+","+mIconXfermode.toString());
         canvas.drawBitmap(mIconBitmap, null, mIconRect, null);
         mBitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mBitmap);
