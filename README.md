@@ -7,8 +7,8 @@ Imitate WeChat6.0 TabLayout
 
 # build
 ```
-git clone https://github.com/seven332/EhViewer
-cd EhViewer
+git clone https://github.com/Ahaochan/TabLayout
+cd TabLayout
 ./gradlew app:assembleDebug
 ```
 
